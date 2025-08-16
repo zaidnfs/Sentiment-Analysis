@@ -1,9 +1,20 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from transformers import pipeline
+from fastapi.middleware.cors import CORSMiddleware
 
 # 1. Create a FastAPI app instance
 app = FastAPI()
+
+origins = ["*"] # Allow all origins for simplicity
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # 2. Load the sentiment analysis model from Hugging Face
 # This will download the model on the first run
