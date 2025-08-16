@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentiment-api-deployment
+spec:
+  replicas: 2 # Run 2 copies of our app for availability
+  selector:
+    matchLabels:
+      app: sentiment-api
+  template:
+    metadata:
+      labels:
+        app: sentiment-api
+    spec:
+      containers:
+      - name: sentiment-api-container
+        image: sentiment-api # The name of our local Docker image
+        imagePullPolicy: IfNotPresent # Tells K8s to use the local image
+        ports:
+        - containerPort: 80
