@@ -1,5 +1,7 @@
 # Sentiment Analysis API
 
+![Project Infographic](./assets/infographic-preview.jpg)
+
 This project is a **FastAPI-based Sentiment Analysis API** that uses Hugging Face's `transformers` library with a pre-trained model (`distilbert-base-uncased-finetuned-sst-2-english`) to classify text into **positive** or **negative** sentiments.
 
 ---
