@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: sentiment-api-container
-        image: sentiment-api # The name of our local Docker image
-        imagePullPolicy: IfNotPresent # Tells K8s to use the local image
+        image: zaidalam7/sentiment-api:latest # The name of our local Docker image
+        imagePullPolicy: Always # Tells K8s to use the local image
         ports:
         - containerPort: 80

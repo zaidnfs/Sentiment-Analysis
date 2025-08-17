@@ -1,30 +1,55 @@
 name: CI/CD Pipeline
 
-# This workflow runs on any push to the main branch
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest # Use a standard Linux runner
-
+    runs-on: ubuntu-latest
     steps:
-      # 1. Check out your repository code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. Log in to Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 3. Build and push the Docker image
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/sentiment-api:latest
+
+  # --- THIS IS THE NEW PART YOU ARE ADDING ---
+  deploy:
+    # This job runs only after 'build-and-push' succeeds
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 1: Authenticate with your Google Cloud account
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GKE_SA_KEY }}'
+
+      # Step 2: Connect to your GKE cluster
+      - name: 'Set up GKE cluster'
+        uses: 'google-github-actions/get-gke-credentials@v1'
+        with:
+          cluster_name: 'sentiment-api-cluster'
+          location: 'us-central1-c'
+          project_id: '${{ secrets.GKE_PROJECT }}'
+
+      # Step 3: Deploy the application using kubectl
+      - name: Deploy to GKE
+        run: |-
+          kubectl apply -f deployment.yaml
+          kubectl apply -f service.yaml
