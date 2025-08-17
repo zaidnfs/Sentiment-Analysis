@@ -1,147 +1,127 @@
-# End-to-End Sentiment Analysis API (Docker & Kubernetes)
+# Live Sentiment Analysis API (Deployed on GKE with CI/CD)
 
-This project is a complete, full-stack **MLOps pipeline** that serves a sentiment analysis model as a scalable microservice.
-It includes a Python backend, a containerized deployment managed by Kubernetes, and a user-friendly web interface for interaction.
+![Project Infographic](./assets/infographic-preview.jpg)
 
-This project is designed to showcase a **full development-to-deployment lifecycle**, demonstrating key skills in **AI, MLOps, and Cloud-Native technologies**.
+This is a complete, full-stack **MLOps project** that demonstrates the entire lifecycle of a machine learning application—from development to a live, automated deployment on the cloud.
 
----
-
-## 🏛️ Architecture
-
-The application consists of a **FastAPI backend** that serves a Hugging Face model.
-This service is **containerized with Docker** and deployed on a **Kubernetes cluster** for high availability.
-A **vanilla JavaScript frontend (index.html)** acts as a client to interact with the deployed API.
-
-**Request Flow**:
-
-```
-User (Browser) → Frontend (index.html) → Kubernetes Service → Pod → Container (API)
-```
+The project features a **FastAPI backend**, a **containerized service managed by Kubernetes**, a fully automated **CI/CD pipeline with GitHub Actions**, and an **interactive web frontend**. The entire application is deployed and running on **Google Kubernetes Engine (GKE).**
 
 ---
 
-## ✨ Key Features
+## 🚀 Live Demo & Usage
+This project is deployed live.  
 
-* **FastAPI Backend**: A robust REST API for serving the AI model.
-* **Dockerized Service**: The application is fully containerized for portability and consistency.
-* **Kubernetes Deployment**: Managed by Kubernetes for scalability and self-healing.
-* **Interactive Frontend**: A simple web UI to interact with the API without using the command line.
-* **MLOps Pipeline**: A complete example of a model deployment pipeline.
+- **Frontend URL:** [Sentiment Analysis Frontend](https://zaidnfs.github.io/Sentiment-Analysis/)  
+- **Backend API URL:** [http://34.31.203.92](http://34.31.203.92)  
+
+⚠️ **Important: How to Run the Demo**  
+Due to browser security (Mixed Content), a secure **https** website (GitHub Pages) cannot directly call an insecure **http** API (your GKE IP).  
+
+👉 The best way to run the full demo is **locally**:
+
+```bash
+# Clone this repository
+git clone https://github.com/zaidnfs/Sentiment-Analysis.git
+cd Sentiment-Analysis
+
+# Start a local web server
+python -m http.server
+
+# Open the frontend in your browser
+http://localhost:8000
+```
+
+This serves the frontend from a local **http** address, allowing it to connect to the live **http** backend on GKE.
+
+---
+
+## 🏛️ Architecture & CI/CD Pipeline
+
+This project follows a modern, **cloud-native architecture**.  
+The **CI/CD pipeline** is fully automated: every push to `main` triggers a workflow that builds, tests, and deploys to GKE.
+
+### CI/CD Workflow
+```mermaid
+graph TD
+    A[Git Push] --> B[GitHub Actions]
+    B --> C[Build Docker Image]
+    C --> D[Push to Docker Hub]
+    D --> E[Deploy to GKE]
+```
+
+### Application Flow
+```mermaid
+graph LR
+    U[User Browser] --> LB[Google Cloud Load Balancer]
+    LB --> S[GKE Service]
+    S --> P[Pod]
+    P --> C[Container (API)]
+```
 
 ---
 
 ## 🛠️ Tech Stack
-
-* **Backend**: Python, FastAPI
-* **Machine Learning**: Hugging Face Transformers
-* **Containerization**: Docker
-* **Orchestration**: Kubernetes
-* **Frontend**: HTML, Tailwind CSS, JavaScript
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-* Git
-* Docker Desktop with Kubernetes enabled
-* ⚠️ Ensure Docker has **at least 4GB of memory** allocated (Settings > Resources > Advanced)
+- **Cloud:** Google Kubernetes Engine (GKE)  
+- **CI/CD:** GitHub Actions  
+- **Backend:** Python, FastAPI  
+- **Containerization:** Docker, Docker Hub  
+- **Orchestration:** Kubernetes  
+- **Frontend:** HTML, Tailwind CSS, JavaScript  
 
 ---
 
-### Step 1: Clone the Repository
+## 🧪 API Usage (Directly via cURL)
 
+Endpoint: `POST http://34.31.203.92/analyze`  
+
+### Example Request:
 ```bash
-git clone https://github.com/your-username/sentiment-api.git
-cd sentiment-api
-```
-
-### Step 2: Build the Image and Deploy to Kubernetes
-
-```bash
-# Build the image
-docker build -t sentiment-api .
-
-# Deploy the application
-kubectl apply -f deployment.yaml -f service.yaml
-```
-
-✅ Wait \~1 minute for the pods to start.
-Check status:
-
-```bash
-kubectl get pods
-```
-
-### Step 3: Use the Web Frontend
-
-1. Find the API URL:
-
-   ```bash
-   kubectl get service sentiment-api-service
-   ```
-
-   Example → `http://localhost:31234`
-
-2. Open **index.html** in your browser.
-
-3. Paste the API URL → Type text → Click **"Analyze Sentiment"** 🎉
-
----
-
-## 🧪 API Usage (via cURL)
-
-**Endpoint**: `POST /analyze`
-
-```bash
-curl -X POST "http://localhost:31234/analyze" \
+curl -X POST "http://34.31.203.92/analyze" \
      -H "Content-Type: application/json" \
-     -d '{"text": "This is an amazing project!"}'
+     -d '{"text": "This application is deployed live on the cloud!"}'
 ```
 
-**Response**:
-
+### Example Response:
 ```json
 {
   "label": "POSITIVE",
-  "score": 0.9998
+  "score": 0.9999
 }
 ```
 
 ---
 
 <details>
-<summary><strong>Optional: Running Backend Locally (Without Docker)</strong></summary>
+<summary><strong>📦 Instructions to Deploy Your Own Version</strong></summary>
 
-```bash
-# Create venv
-python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
+### Prerequisites
+- Google Cloud account with a project created  
+- Docker Hub account  
+- `gcloud`, `git`, and `kubectl` installed  
 
-# Install dependencies
-pip install -r requirements.txt
-
-# Run server
-uvicorn main:app --reload
-```
+### Steps
+1. **Fork and Clone the Repository**  
+2. **Create a GKE Cluster** and Service Account.  
+3. **Configure GitHub Secrets** in your forked repo:  
+   - `DOCKERHUB_USERNAME`: Your Docker Hub username  
+   - `DOCKERHUB_TOKEN`: A Docker Hub access token  
+   - `GKE_PROJECT`: Your Google Cloud project ID  
+   - `GKE_SA_KEY`: JSON key for your Google Cloud service account  
+4. **Update Config Files**:  
+   - `deployment.yaml`: Point image to your Docker Hub repo  
+   - `index.html`: Update `baseUrl` to your GKE external IP  
+5. **Push Changes** → GitHub Actions will trigger the pipeline and deploy automatically.  
 
 </details>
 
 ---
 
 ## 📈 Future Improvements
-
-* [ ] **CI/CD Pipeline**: Automate testing & deployment with GitHub Actions.
-* [ ] **Cloud Deployment**: Deploy on GKE (Google Cloud) / EKS (AWS).
-* [ ] **Monitoring**: Add Prometheus & Grafana for real-time monitoring.
+- [ ] **Domain Name & HTTPS**: Use custom domain + SSL/TLS with Ingress & cert-manager  
+- [ ] **Monitoring & Alerting**: Add Prometheus & Grafana for real-time monitoring  
+- [ ] **Infrastructure as Code (IaC)**: Manage GKE cluster with Terraform  
 
 ---
 
 ## 👨‍💻 Author
-
-Developed by **Zaid** 🚀
-🔗 [LinkedIn](https://www.linkedin.com/in/zaidalam-cloud-ai/) | [GitHub](https://github.com/zaidnfs)
-
----
+Developed by **Zaid 🚀**
