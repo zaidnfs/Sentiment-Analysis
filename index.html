@@ -34,12 +34,6 @@
 
             <div class="space-y-4">
                 <div>
-                    <label for="apiUrl" class="block text-sm font-medium text-gray-300 mb-1">API URL</label>
-                    <input type="text" id="apiUrl" class="w-full bg-gray-900 bg-opacity-80 border border-gray-600 rounded-lg p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400" placeholder="e.g., http://localhost:31234">
-                    <p class="text-xs text-gray-500 mt-1">Find this using `kubectl get service sentiment-api-service`.</p>
-                </div>
-
-                <div>
                     <label for="textInput" class="block text-sm font-medium text-gray-300 mb-1">Your Text</label>
                     <textarea id="textInput" rows="4" class="w-full bg-gray-900 bg-opacity-80 border border-gray-600 rounded-lg p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Type or paste your text here..."></textarea>
                 </div>
@@ -58,17 +52,12 @@
     <script>
         const analyzeBtn = document.getElementById('analyzeBtn');
         const textInput = document.getElementById('textInput');
-        const apiUrlInput = document.getElementById('apiUrl');
         const resultDiv = document.getElementById('result');
 
         analyzeBtn.addEventListener('click', async () => {
             const text = textInput.value.trim();
-            const baseUrl = 'http://34.31.203.92';
+            const baseUrl = 'http://34.31.203.92'; // Hardcoded public IP
 
-            if (!baseUrl) {
-                displayError('Please enter the API URL.');
-                return;
-            }
             if (!text) {
                 displayError('Please enter some text to analyze.');
                 return;
@@ -96,7 +85,7 @@
 
             } catch (error) {
                 console.error('Fetch error:', error);
-                displayError('Could not connect to the API. Make sure the URL is correct and the service is running.');
+                displayError('Could not connect to the API. Make sure the backend service is running.');
             }
         });
 
