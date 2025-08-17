@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: sentiment-api-service
 spec:
-  type: NodePort # Exposes the service on a static port on the host node
+  type: LoadBalancer # Exposes the service on a public IP port on the host node
   selector:
     app: sentiment-api # Connects this service to the pods from our deployment
   ports:
